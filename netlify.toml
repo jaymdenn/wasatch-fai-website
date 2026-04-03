@@ -1,0 +1,11 @@
+# Netlify configuration for Wasatch FAI Website
+# Static HTML site - no build required
+
+[build]
+  publish = "."
+
+# Redirect rules (if needed in the future)
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
