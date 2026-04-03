@@ -1186,6 +1186,545 @@
         }
 
         /* ============================================
+           QUIZ LIGHTBOX
+        ============================================ */
+        .quiz-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: var(--radius-lg);
+            max-width: 560px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .quiz-overlay.active .quiz-container {
+            transform: scale(1) translateY(0);
+        }
+
+        .quiz-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--bg-section);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .quiz-close:hover {
+            background: var(--border);
+            transform: rotate(90deg);
+        }
+
+        .quiz-close svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-secondary);
+        }
+
+        .quiz-header {
+            padding: 40px 40px 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quiz-header h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .quiz-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .quiz-progress {
+            padding: 20px 40px;
+            background: var(--bg-section);
+        }
+
+        .quiz-progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .quiz-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--orange) 0%, var(--orange-light) 100%);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .quiz-progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .quiz-body {
+            padding: 32px 40px 40px;
+        }
+
+        .quiz-step {
+            display: none;
+        }
+
+        .quiz-step.active {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quiz-question {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            background: var(--bg-section);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary-light);
+            background: rgba(26, 95, 180, 0.05);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: rgba(26, 95, 180, 0.1);
+        }
+
+        .quiz-option-radio {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .quiz-option.selected .quiz-option-radio {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+
+        .quiz-option.selected .quiz-option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .quiz-option-text {
+            flex: 1;
+        }
+
+        .quiz-option-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            gap: 16px;
+        }
+
+        .quiz-btn {
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quiz-btn-back {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .quiz-btn-back:hover {
+            border-color: var(--text-secondary);
+            color: var(--text);
+        }
+
+        .quiz-btn-next {
+            background: var(--orange);
+            border: none;
+            color: white;
+            margin-left: auto;
+            box-shadow: 0 4px 16px rgba(232, 93, 4, 0.3);
+        }
+
+        .quiz-btn-next:hover {
+            background: var(--orange-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(232, 93, 4, 0.4);
+        }
+
+        .quiz-btn-next:disabled {
+            background: var(--border);
+            color: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .quiz-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Quiz Results */
+        .quiz-result {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .quiz-result-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .quiz-result-icon.qualified {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .quiz-result-icon.maybe {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        }
+
+        .quiz-result-icon.not-qualified {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+        }
+
+        .quiz-result-icon svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        .quiz-result-icon.qualified svg {
+            color: #2e7d32;
+        }
+
+        .quiz-result-icon.maybe svg {
+            color: #f57c00;
+        }
+
+        .quiz-result-icon.not-qualified svg {
+            color: #c62828;
+        }
+
+        .quiz-result h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .quiz-result-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .quiz-result-highlights {
+            background: var(--bg-section);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .quiz-result-highlights h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quiz-result-highlights ul {
+            list-style: none;
+        }
+
+        .quiz-result-highlights li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .quiz-result-highlights li:last-child {
+            margin-bottom: 0;
+        }
+
+        .quiz-result-highlights li svg {
+            width: 18px;
+            height: 18px;
+            color: var(--success);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Quiz Form (final step) */
+        .quiz-form {
+            text-align: left;
+        }
+
+        .quiz-form .form-group {
+            margin-bottom: 16px;
+        }
+
+        .quiz-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .quiz-form label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .quiz-form input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: var(--bg-section);
+        }
+
+        .quiz-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .quiz-form-submit {
+            width: 100%;
+            padding: 18px;
+            background: var(--orange);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(232, 93, 4, 0.3);
+            margin-top: 8px;
+        }
+
+        .quiz-form-submit:hover {
+            background: var(--orange-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(232, 93, 4, 0.4);
+        }
+
+        .quiz-form-disclaimer {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Quiz Success State */
+        .quiz-success {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .quiz-success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .quiz-success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: #2e7d32;
+        }
+
+        .quiz-success h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .quiz-success p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .quiz-success-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .quiz-success-cta svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-header {
+                padding: 32px 24px 20px;
+            }
+
+            .quiz-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .quiz-progress {
+                padding: 16px 24px;
+            }
+
+            .quiz-body {
+                padding: 24px;
+            }
+
+            .quiz-question {
+                font-size: 1.1rem;
+            }
+
+            .quiz-option {
+                padding: 14px 16px;
+            }
+
+            .quiz-form .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .quiz-nav {
+                flex-direction: column-reverse;
+            }
+
+            .quiz-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .quiz-btn-next {
+                margin-left: 0;
+            }
+        }
+
+        /* ============================================
            MOBILE STICKY CTA
         ============================================ */
         .mobile-sticky-cta {
@@ -1304,7 +1843,7 @@
                 <a href="#" class="logo">
                     <img src="Logo For Sign Black.png" alt="Wasatch Foot & Ankle Institute">
                 </a>
-                <a href="#schedule" class="header-cta">Request Free Consultation</a>
+                <a href="#" class="header-cta quiz-trigger">See If You Qualify</a>
             </div>
         </div>
     </header>
@@ -1349,7 +1888,7 @@
                         </div>
                     </div>
                     <div class="hero-cta-group">
-                        <a href="#schedule" class="btn-primary">
+                        <a href="#" class="btn-primary quiz-trigger">
                             See If You Qualify
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -1663,7 +2202,7 @@
                             Personalized treatment plan
                         </li>
                     </ul>
-                    <a href="#schedule" class="pricing-cta">Schedule Evaluation</a>
+                    <a href="#" class="pricing-cta quiz-trigger">See If You Qualify</a>
                 </div>
                 <div class="pricing-card featured">
                     <h3>The AHPR Procedure</h3>
@@ -1707,7 +2246,7 @@
                             90-day recovery support
                         </li>
                     </ul>
-                    <a href="#schedule" class="pricing-cta">Get Started</a>
+                    <a href="#" class="pricing-cta quiz-trigger">Get Started</a>
                 </div>
             </div>
         </div>
@@ -1932,7 +2471,439 @@
 
     <!-- Mobile Sticky CTA -->
     <div class="mobile-sticky-cta">
-        <a href="#schedule">See If You Qualify</a>
+        <a href="#" class="quiz-trigger">See If You Qualify</a>
+    </div>
+
+    <!-- Qualification Quiz Lightbox -->
+    <div class="quiz-overlay" id="quizOverlay">
+        <div class="quiz-container">
+            <button class="quiz-close" id="quizClose">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="quiz-header">
+                <h2>See If You Qualify</h2>
+                <p>Answer a few quick questions to see if you're a candidate</p>
+            </div>
+
+            <div class="quiz-progress">
+                <div class="quiz-progress-bar">
+                    <div class="quiz-progress-fill" id="quizProgressFill"></div>
+                </div>
+                <div class="quiz-progress-text">
+                    <span id="quizStepText">Question 1 of 5</span>
+                    <span id="quizPercentText">0%</span>
+                </div>
+            </div>
+
+            <div class="quiz-body">
+                <!-- Step 1: Pain Duration -->
+                <div class="quiz-step active" data-step="1">
+                    <div class="quiz-question">How long have you been experiencing heel pain?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="less-than-3" data-score="0">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Less than 3 months</div>
+                            <div class="quiz-option-icon">🕐</div>
+                        </div>
+                        <div class="quiz-option" data-value="3-6-months" data-score="1">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">3-6 months</div>
+                            <div class="quiz-option-icon">📅</div>
+                        </div>
+                        <div class="quiz-option" data-value="6-12-months" data-score="2">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">6-12 months</div>
+                            <div class="quiz-option-icon">📆</div>
+                        </div>
+                        <div class="quiz-option" data-value="1-2-years" data-score="3">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">1-2 years</div>
+                            <div class="quiz-option-icon">⏳</div>
+                        </div>
+                        <div class="quiz-option" data-value="more-than-2" data-score="3">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">More than 2 years</div>
+                            <div class="quiz-option-icon">😫</div>
+                        </div>
+                    </div>
+                    <div class="quiz-nav">
+                        <button class="quiz-btn quiz-btn-next" id="nextBtn1" disabled>
+                            Continue
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Morning Pain -->
+                <div class="quiz-step" data-step="2">
+                    <div class="quiz-question">Is your heel pain worst with your first steps in the morning?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="yes-severe" data-score="2">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Yes, it's the most painful time</div>
+                            <div class="quiz-option-icon">🌅</div>
+                        </div>
+                        <div class="quiz-option" data-value="yes-moderate" data-score="2">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Yes, but it loosens up after walking</div>
+                            <div class="quiz-option-icon">🚶</div>
+                        </div>
+                        <div class="quiz-option" data-value="constant" data-score="1">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Pain is constant throughout the day</div>
+                            <div class="quiz-option-icon">😣</div>
+                        </div>
+                        <div class="quiz-option" data-value="no" data-score="0">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">No, mornings aren't particularly worse</div>
+                            <div class="quiz-option-icon">🤔</div>
+                        </div>
+                    </div>
+                    <div class="quiz-nav">
+                        <button class="quiz-btn quiz-btn-back" data-back="1">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back
+                        </button>
+                        <button class="quiz-btn quiz-btn-next" disabled>
+                            Continue
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Treatments Tried -->
+                <div class="quiz-step" data-step="3">
+                    <div class="quiz-question">Which treatments have you already tried? (Select the best match)</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="none" data-score="0">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">I haven't tried any treatment yet</div>
+                            <div class="quiz-option-icon">🆕</div>
+                        </div>
+                        <div class="quiz-option" data-value="basic" data-score="1">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Rest, ice, stretching, or OTC pain meds</div>
+                            <div class="quiz-option-icon">🧊</div>
+                        </div>
+                        <div class="quiz-option" data-value="moderate" data-score="2">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Physical therapy or custom orthotics</div>
+                            <div class="quiz-option-icon">👟</div>
+                        </div>
+                        <div class="quiz-option" data-value="advanced" data-score="3">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Cortisone injections or shockwave therapy</div>
+                            <div class="quiz-option-icon">💉</div>
+                        </div>
+                        <div class="quiz-option" data-value="multiple" data-score="3">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Multiple treatments with no lasting relief</div>
+                            <div class="quiz-option-icon">😤</div>
+                        </div>
+                    </div>
+                    <div class="quiz-nav">
+                        <button class="quiz-btn quiz-btn-back" data-back="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back
+                        </button>
+                        <button class="quiz-btn quiz-btn-next" disabled>
+                            Continue
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Pain Level -->
+                <div class="quiz-step" data-step="4">
+                    <div class="quiz-question">How much does heel pain affect your daily activities?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="minimal" data-score="0">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Minimal impact - mostly just annoying</div>
+                            <div class="quiz-option-icon">😐</div>
+                        </div>
+                        <div class="quiz-option" data-value="moderate" data-score="1">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">I avoid some activities but manage</div>
+                            <div class="quiz-option-icon">🚫</div>
+                        </div>
+                        <div class="quiz-option" data-value="significant" data-score="2">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Significantly limits my walking and exercise</div>
+                            <div class="quiz-option-icon">😔</div>
+                        </div>
+                        <div class="quiz-option" data-value="severe" data-score="3">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Severely affects my quality of life</div>
+                            <div class="quiz-option-icon">😢</div>
+                        </div>
+                    </div>
+                    <div class="quiz-nav">
+                        <button class="quiz-btn quiz-btn-back" data-back="3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back
+                        </button>
+                        <button class="quiz-btn quiz-btn-next" disabled>
+                            Continue
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Location -->
+                <div class="quiz-step" data-step="5">
+                    <div class="quiz-question">Are you located in or able to travel to Utah?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="utah" data-score="2">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">Yes, I live in Utah</div>
+                            <div class="quiz-option-icon">🏔️</div>
+                        </div>
+                        <div class="quiz-option" data-value="nearby" data-score="2">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">I'm in Wyoming or Idaho (nearby)</div>
+                            <div class="quiz-option-icon">🚗</div>
+                        </div>
+                        <div class="quiz-option" data-value="willing" data-score="1">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">I'm willing to travel for the procedure</div>
+                            <div class="quiz-option-icon">✈️</div>
+                        </div>
+                        <div class="quiz-option" data-value="no" data-score="0">
+                            <div class="quiz-option-radio"></div>
+                            <div class="quiz-option-text">No, I cannot travel to Utah</div>
+                            <div class="quiz-option-icon">❌</div>
+                        </div>
+                    </div>
+                    <div class="quiz-nav">
+                        <button class="quiz-btn quiz-btn-back" data-back="4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back
+                        </button>
+                        <button class="quiz-btn quiz-btn-next" disabled>
+                            See My Results
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Step: Qualified -->
+                <div class="quiz-step" data-step="results-qualified">
+                    <div class="quiz-result">
+                        <div class="quiz-result-icon qualified">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3>Great News! You May Be a Strong Candidate</h3>
+                        <p class="quiz-result-subtitle">Based on your answers, you appear to be a good fit for our Advanced Heel Pain Relief Procedure.</p>
+                        <div class="quiz-result-highlights">
+                            <h4>Why You May Qualify</h4>
+                            <ul>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Your chronic heel pain has persisted despite treatment
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Your symptoms match typical plantar fasciitis patterns
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    You're ready for a solution that actually works
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="quiz-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quizFirstName">First Name *</label>
+                                <input type="text" id="quizFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quizLastName">Last Name *</label>
+                                <input type="text" id="quizLastName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quizEmail">Email *</label>
+                                <input type="email" id="quizEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quizPhone">Phone *</label>
+                                <input type="tel" id="quizPhone" required>
+                            </div>
+                        </div>
+                        <button type="button" class="quiz-form-submit" id="quizFormSubmit">
+                            Request My Free Consultation
+                        </button>
+                        <p class="quiz-form-disclaimer">We'll contact you within 1 business day. No spam, ever.</p>
+                    </div>
+                </div>
+
+                <!-- Results Step: Maybe -->
+                <div class="quiz-step" data-step="results-maybe">
+                    <div class="quiz-result">
+                        <div class="quiz-result-icon maybe">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <h3>You May Need an Evaluation First</h3>
+                        <p class="quiz-result-subtitle">Based on your answers, we'd recommend starting with a diagnostic evaluation to determine the best treatment path for you.</p>
+                        <div class="quiz-result-highlights">
+                            <h4>What This Means</h4>
+                            <ul>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    A $349 evaluation will determine your exact condition
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    You may benefit from conservative treatment first
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    We'll create a personalized treatment plan
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="quiz-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quizFirstName2">First Name *</label>
+                                <input type="text" id="quizFirstName2" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quizLastName2">Last Name *</label>
+                                <input type="text" id="quizLastName2" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quizEmail2">Email *</label>
+                                <input type="email" id="quizEmail2" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quizPhone2">Phone *</label>
+                                <input type="tel" id="quizPhone2" required>
+                            </div>
+                        </div>
+                        <button type="button" class="quiz-form-submit" id="quizFormSubmit2">
+                            Schedule My Evaluation
+                        </button>
+                        <p class="quiz-form-disclaimer">We'll contact you within 1 business day. No spam, ever.</p>
+                    </div>
+                </div>
+
+                <!-- Results Step: Not Qualified -->
+                <div class="quiz-step" data-step="results-not">
+                    <div class="quiz-result">
+                        <div class="quiz-result-icon not-qualified">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3>This Procedure May Not Be Right for You</h3>
+                        <p class="quiz-result-subtitle">Based on your answers, our Advanced Heel Pain Relief Procedure may not be the best fit at this time. But we can still help point you in the right direction.</p>
+                        <div class="quiz-result-highlights">
+                            <h4>Our Recommendations</h4>
+                            <ul>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Try conservative treatments like PT and orthotics first
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Give your current treatment 3-6 months to work
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Revisit our quiz if pain persists after treatment
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="quiz-form">
+                        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Want to stay in touch? Leave your info and we'll send helpful resources.</p>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quizFirstName3">First Name</label>
+                                <input type="text" id="quizFirstName3">
+                            </div>
+                            <div class="form-group">
+                                <label for="quizEmail3">Email</label>
+                                <input type="email" id="quizEmail3">
+                            </div>
+                        </div>
+                        <button type="button" class="quiz-form-submit" id="quizFormSubmit3" style="background: var(--primary);">
+                            Send Me Resources
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Success Step -->
+                <div class="quiz-step" data-step="success">
+                    <div class="quiz-success">
+                        <div class="quiz-success-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <h3>You're All Set!</h3>
+                        <p>Thank you for completing the quiz. A member of our team will contact you within 1 business day to discuss your next steps.</p>
+                        <div class="quiz-success-cta">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            Need immediate help? Call (801) 555-1234
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1967,8 +2938,8 @@
             document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
 
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        // Smooth scrolling (only for non-quiz triggers)
+        document.querySelectorAll('a[href^="#"]:not(.quiz-trigger)').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
@@ -1979,6 +2950,250 @@
                 }
             });
         });
+
+        // ============================================
+        // QUALIFICATION QUIZ LOGIC
+        // ============================================
+        const quizOverlay = document.getElementById('quizOverlay');
+        const quizClose = document.getElementById('quizClose');
+        const progressFill = document.getElementById('quizProgressFill');
+        const stepText = document.getElementById('quizStepText');
+        const percentText = document.getElementById('quizPercentText');
+        const totalSteps = 5;
+        let currentStep = 1;
+        let quizAnswers = {};
+        let totalScore = 0;
+
+        // Open quiz
+        document.querySelectorAll('.quiz-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                openQuiz();
+            });
+        });
+
+        function openQuiz() {
+            quizOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            resetQuiz();
+        }
+
+        // Close quiz
+        quizClose.addEventListener('click', closeQuiz);
+        quizOverlay.addEventListener('click', function(e) {
+            if (e.target === quizOverlay) {
+                closeQuiz();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && quizOverlay.classList.contains('active')) {
+                closeQuiz();
+            }
+        });
+
+        function closeQuiz() {
+            quizOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function resetQuiz() {
+            currentStep = 1;
+            quizAnswers = {};
+            totalScore = 0;
+
+            // Reset all steps
+            document.querySelectorAll('.quiz-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.querySelector('.quiz-step[data-step="1"]').classList.add('active');
+
+            // Reset all options
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Reset all next buttons
+            document.querySelectorAll('.quiz-btn-next').forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // Reset form fields
+            document.querySelectorAll('.quiz-form input').forEach(input => {
+                input.value = '';
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progress = ((currentStep - 1) / totalSteps) * 100;
+            progressFill.style.width = progress + '%';
+            stepText.textContent = `Question ${currentStep} of ${totalSteps}`;
+            percentText.textContent = Math.round(progress) + '%';
+        }
+
+        // Option selection
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const step = this.closest('.quiz-step');
+                const stepNum = step.dataset.step;
+
+                // Remove selection from siblings
+                step.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                // Select this option
+                this.classList.add('selected');
+
+                // Store answer
+                quizAnswers[stepNum] = {
+                    value: this.dataset.value,
+                    score: parseInt(this.dataset.score)
+                };
+
+                // Enable next button
+                step.querySelector('.quiz-btn-next').disabled = false;
+            });
+        });
+
+        // Next button clicks
+        document.querySelectorAll('.quiz-btn-next').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const currentStepEl = document.querySelector('.quiz-step.active');
+                const stepNum = parseInt(currentStepEl.dataset.step);
+
+                if (stepNum < totalSteps) {
+                    // Go to next question
+                    goToStep(stepNum + 1);
+                } else {
+                    // Calculate results and show appropriate result screen
+                    showResults();
+                }
+            });
+        });
+
+        // Back button clicks
+        document.querySelectorAll('.quiz-btn-back').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const backTo = parseInt(this.dataset.back);
+                goToStep(backTo);
+            });
+        });
+
+        function goToStep(stepNum) {
+            document.querySelectorAll('.quiz-step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            const targetStep = document.querySelector(`.quiz-step[data-step="${stepNum}"]`);
+            if (targetStep) {
+                targetStep.classList.add('active');
+                currentStep = stepNum;
+                updateProgress();
+            }
+        }
+
+        function showResults() {
+            // Calculate total score
+            totalScore = Object.values(quizAnswers).reduce((sum, answer) => sum + answer.score, 0);
+
+            // Check location answer specifically
+            const locationAnswer = quizAnswers['5']?.value;
+            const canTravel = locationAnswer !== 'no';
+
+            // Determine result type
+            let resultType;
+
+            if (!canTravel) {
+                // Can't travel to Utah
+                resultType = 'results-not';
+            } else if (totalScore >= 9) {
+                // Strong candidate
+                resultType = 'results-qualified';
+            } else if (totalScore >= 5) {
+                // Needs evaluation
+                resultType = 'results-maybe';
+            } else {
+                // Probably needs conservative treatment first
+                resultType = 'results-not';
+            }
+
+            // Hide all steps and show result
+            document.querySelectorAll('.quiz-step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            document.querySelector(`.quiz-step[data-step="${resultType}"]`).classList.add('active');
+
+            // Update progress to 100%
+            progressFill.style.width = '100%';
+            stepText.textContent = 'Results';
+            percentText.textContent = '100%';
+        }
+
+        // Form submissions
+        document.getElementById('quizFormSubmit').addEventListener('click', function() {
+            submitQuizForm('qualified');
+        });
+
+        document.getElementById('quizFormSubmit2').addEventListener('click', function() {
+            submitQuizForm('maybe');
+        });
+
+        document.getElementById('quizFormSubmit3').addEventListener('click', function() {
+            submitQuizForm('not-qualified');
+        });
+
+        function submitQuizForm(type) {
+            let firstName, lastName, email, phone;
+
+            if (type === 'qualified') {
+                firstName = document.getElementById('quizFirstName').value;
+                lastName = document.getElementById('quizLastName').value;
+                email = document.getElementById('quizEmail').value;
+                phone = document.getElementById('quizPhone').value;
+
+                if (!firstName || !lastName || !email || !phone) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+            } else if (type === 'maybe') {
+                firstName = document.getElementById('quizFirstName2').value;
+                lastName = document.getElementById('quizLastName2').value;
+                email = document.getElementById('quizEmail2').value;
+                phone = document.getElementById('quizPhone2').value;
+
+                if (!firstName || !lastName || !email || !phone) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+            } else {
+                firstName = document.getElementById('quizFirstName3').value;
+                email = document.getElementById('quizEmail3').value;
+            }
+
+            // Compile all data
+            const formData = {
+                firstName,
+                lastName,
+                email,
+                phone,
+                quizAnswers,
+                totalScore,
+                qualificationType: type,
+                submittedAt: new Date().toISOString()
+            };
+
+            console.log('Quiz form submitted:', formData);
+
+            // Show success step
+            document.querySelectorAll('.quiz-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.querySelector('.quiz-step[data-step="success"]').classList.add('active');
+        }
     </script>
 </body>
 </html>
