@@ -3038,7 +3038,7 @@
         document.querySelectorAll('.quiz-option').forEach(option => {
             option.addEventListener('click', function() {
                 const step = this.closest('.quiz-step');
-                const stepNum = step.dataset.step;
+                const stepNum = parseInt(step.dataset.step);
 
                 // Remove selection from siblings
                 step.querySelectorAll('.quiz-option').forEach(opt => {
@@ -3056,6 +3056,15 @@
 
                 // Enable next button
                 step.querySelector('.quiz-btn-next').disabled = false;
+
+                // Auto-advance after a short delay for single-choice questions
+                setTimeout(() => {
+                    if (stepNum < totalSteps) {
+                        goToStep(stepNum + 1);
+                    } else {
+                        showResults();
+                    }
+                }, 300);
             });
         });
 
