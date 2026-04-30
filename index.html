@@ -7,6 +7,24 @@
     <meta name="description" content="Chronic plantar fasciitis that won't heal? Our in-office ultrasound-guided procedure offers relief without hospital surgery, general anesthesia, or stitches. Flat fee pricing. Walk out the same day.">
     <meta name="keywords" content="heel pain won't heal, chronic plantar fasciitis, plantar fasciitis not getting better, failed plantar fasciitis treatment, ultrasound plantar fascia release">
 
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '26143004972062208');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=26143004972062208&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Heel Pain That Won't Heal? | Advanced Relief Procedure">
@@ -1838,6 +1856,18 @@
     </style>
 </head>
 <body>
+    <!-- Hidden form for Netlify Forms detection (quiz submissions are sent here via JS) -->
+    <form name="quiz-submission" data-netlify="true" netlify-honeypot="bot-field" hidden>
+        <input type="text" name="firstName">
+        <input type="text" name="lastName">
+        <input type="email" name="email">
+        <input type="tel" name="phone">
+        <input type="text" name="qualificationType">
+        <input type="text" name="totalScore">
+        <input type="text" name="quizAnswers">
+        <input type="text" name="submittedAt">
+        <input name="bot-field">
+    </form>
     <!-- Header -->
     <header>
         <div class="container">
@@ -2389,7 +2419,9 @@
                     <div class="lead-form" id="leadForm">
                         <h3>Request Your Evaluation</h3>
                         <p class="form-subtitle">Fill out the form and we'll contact you within 1 business day</p>
-                        <form id="evaluationForm">
+                        <form id="evaluationForm" name="evaluation" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                            <input type="hidden" name="form-name" value="evaluation">
+                            <p style="display:none;"><label>Don't fill this out: <input name="bot-field"></label></p>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="firstName">First Name *</label>
@@ -2925,19 +2957,34 @@
             });
         });
 
-        // Form Submission
+        // Helper: encode form data for Netlify
+        function encodeFormData(data) {
+            return Object.keys(data)
+                .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+                .join('&');
+        }
+
+        // Form Submission - posts to Netlify Forms
         document.getElementById('evaluationForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
 
-            console.log('Form submitted:', data);
-
-            document.getElementById('leadForm').classList.add('hidden');
-            document.getElementById('successMessage').classList.add('show');
-
-            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: encodeFormData(data)
+            })
+            .then(() => {
+                document.getElementById('leadForm').classList.add('hidden');
+                document.getElementById('successMessage').classList.add('show');
+                document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            })
+            .catch(error => {
+                console.error('Form submission error:', error);
+                alert('Sorry, there was an issue submitting the form. Please call us directly at (801) 627-2122.');
+            });
         });
 
         // Smooth scrolling (only for non-quiz triggers)
@@ -3185,25 +3232,34 @@
                 email = document.getElementById('quizEmail3').value;
             }
 
-            // Compile all data
+            // Compile all data for Netlify (form-name must match the hidden detection form)
             const formData = {
-                firstName,
-                lastName,
-                email,
-                phone,
-                quizAnswers,
-                totalScore,
+                'form-name': 'quiz-submission',
+                firstName: firstName || '',
+                lastName: lastName || '',
+                email: email || '',
+                phone: phone || '',
                 qualificationType: type,
+                totalScore: String(totalScore),
+                quizAnswers: JSON.stringify(quizAnswers),
                 submittedAt: new Date().toISOString()
             };
 
-            console.log('Quiz form submitted:', formData);
-
-            // Show success step
-            document.querySelectorAll('.quiz-step').forEach(step => {
-                step.classList.remove('active');
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: encodeFormData(formData)
+            })
+            .then(() => {
+                document.querySelectorAll('.quiz-step').forEach(step => {
+                    step.classList.remove('active');
+                });
+                document.querySelector('.quiz-step[data-step="success"]').classList.add('active');
+            })
+            .catch(error => {
+                console.error('Quiz form submission error:', error);
+                alert('Sorry, there was an issue submitting your information. Please call us directly at (801) 627-2122.');
             });
-            document.querySelector('.quiz-step[data-step="success"]').classList.add('active');
         }
     </script>
 </body>
